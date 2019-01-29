@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+
+exec \
+	s6-setuidgid abc /opt/sabnzbd/SABnzbd.py \
+	--config-file /config --server 0.0.0.0:8080
