@@ -20,6 +20,9 @@ RUN \
 	/tmp/sabmznd.tar.gz -C \
 	/opt/sabnzbd --strip-components=1 \
 	&& cd /opt/sabnzbd \
+	\
+# enable multi-language support
+	\
 	&& python tools/make_mo.py
 	
 FROM lsiobase/alpine:edge
