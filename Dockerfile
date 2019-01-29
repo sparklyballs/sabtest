@@ -1,4 +1,5 @@
-FROM alpine as fetch-stage
+ARG ALPINE_VER="edge"
+FROM alpine:${ALPINE_VER} as fetch-stage
 
 # install fetch packages
 RUN \
@@ -25,7 +26,7 @@ RUN \
 	\
 	&& python tools/make_mo.py
 	
-FROM lsiobase/alpine:edge
+FROM lsiobase/alpine:${ALPINE_VER}
 
 # install build packages
 RUN \
