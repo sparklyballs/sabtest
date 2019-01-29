@@ -1,7 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-cd /config
-
 # make folders
 mkdir -p \
 	/downloads \
