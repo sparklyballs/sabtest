@@ -8,6 +8,7 @@ RUN \
 	\
 # fetch source code
 	\
+	&& set -ex \
 	&& mkdir -p \
 		/opt/sabnzbd \
 	&& SABNZBD_RELEASE=$(curl -sX GET "https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest" \
@@ -35,6 +36,7 @@ RUN \
 	\
 # install pip packages
 	\
+	&& set -ex \
 	&& pip install -U \
 		cheetah3 \
 		cryptography \
@@ -55,13 +57,30 @@ RUN \
 	unrar \
 	unzip \
 	\
+# install par2
+	\
+	&& wget --quiet -O /tmp/par2.tar.gz \
+	https://ci.sparklyballs.com:9443/job/Application-Builds/job/par2-build/lastSuccessfulBuild/artifact/build/par2.tar.gz \
+	&& tar xf \
+	/tmp/par2.tar.gz -C \
+	/usr/bin \
+	&& ln -sf /usr/bin/par2 /usr/bin/par2create \
+	&& ln -sf /usr/bin/par2 /usr/bin/par2repair \
+	&& ln -sf /usr/bin/par2 /usr/bin/par2verify \
 # cleanup
 	\
 	&& rm -rf \
 	/root \
+	/tmp/* \
 	&& mkdir -p \
 		/root
 
 # add artifacts from fetch stage
 COPY --from=fetch-stage /opt/sabnzbd /opt/sabnzbd
+
+# add local files
 COPY root/ /
+
+# ports and volumes
+EXPOSE 8080 9090
+VOLUME /config /downloads /incomplete-downloads
