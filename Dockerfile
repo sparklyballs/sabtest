@@ -28,6 +28,11 @@ RUN \
 	
 FROM lsiobase/alpine:${ALPINE_VER}
 
+# add par2
+# sourced from self build here https://ci.sparklyballs.com:9443/job/Application-Builds/job/par2-build/
+# builds will fail unless you download a copy of the build artifacts and place in same folder as the Dockerfile
+ADD par2-*.tar.gz /usr/bin/
+
 # install build packages
 RUN \
 	apk add --no-cache --virtual=build-dependencies \
@@ -61,13 +66,8 @@ RUN \
 	unrar \
 	unzip \
 	\
-# install par2
+# create symlinks for par2
 	\
-	&& wget --quiet -O /tmp/par2.tar.gz \
-	https://ci.sparklyballs.com:9443/job/Application-Builds/job/par2-build/lastSuccessfulBuild/artifact/build/par2.tar.gz \
-	&& tar xf \
-	/tmp/par2.tar.gz -C \
-	/usr/bin \
 	&& ln -sf /usr/bin/par2 /usr/bin/par2create \
 	&& ln -sf /usr/bin/par2 /usr/bin/par2repair \
 	&& ln -sf /usr/bin/par2 /usr/bin/par2verify \
