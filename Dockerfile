@@ -30,8 +30,8 @@ FROM lsiobase/alpine:${ALPINE_VER}
 
 # add par2
 # sourced from self build here https://ci.sparklyballs.com:9443/job/Application-Builds/job/par2-build/
-# builds will fail unless you download a copy of the build artifacts and place in same folder as the Dockerfile
-ADD par2-*.tar.gz /usr/bin/
+# builds will fail unless you download a copy of the build artifacts and place in a folder called build
+ADD /build/par2-*.tar.gz /usr/bin/
 
 # install build packages
 RUN \

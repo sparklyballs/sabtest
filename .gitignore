@@ -43,4 +43,5 @@ Temporary Items
 .apdisk
 
 # par2 build artifacts
+build
 par2-*.tar.gz
