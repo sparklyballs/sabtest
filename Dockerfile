@@ -15,10 +15,10 @@ RUN \
 	&& SABNZBD_RELEASE=$(curl -sX GET "https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest" \
 	| awk '/tag_name/{print $4;exit}' FS='[""]') \
 	&& curl -o \
-	/tmp/sabmznd.tar.gz -L \
+	/tmp/sabnzbd.tar.gz -L \
 	"https://github.com/sabnzbd/sabnzbd/releases/download/${SABNZBD_RELEASE}/SABnzbd-${SABNZBD_RELEASE}-src.tar.gz" \
 	&& tar xf \
-	/tmp/sabmznd.tar.gz -C \
+	/tmp/sabnzbd.tar.gz -C \
 	/opt/sabnzbd --strip-components=1 \
 	&& cd /opt/sabnzbd \
 	\
