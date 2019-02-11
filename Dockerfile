@@ -45,7 +45,7 @@ RUN \
 	set -ex \
 	&& python tools/make_mo.py
 	
-FROM lsiobase/alpine:${ALPINE_VER}
+FROM sparklyballs/alpine-test:${ALPINE_VER}
 
 ############## runtine stage ##############
 
