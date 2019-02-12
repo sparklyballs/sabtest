@@ -7,17 +7,19 @@ FROM alpine:${ALPINE_VER} as fetch-stage
 RUN \
 	apk add --no-cache \
 		bash \
-		curl
+		curl \
+		jq
 
 # set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # fetch source code
 RUN \
-	mkdir -p \
+	set -ex \
+	&& mkdir -p \
 		/opt/sabnzbd \
 	&& SABNZBD_RELEASE=$(curl -sX GET "https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest" \
-	| awk '/tag_name/{print $4;exit}' FS='[""]') || : \
+	| jq -r .tag_name) \
 	&& curl -o \
 	/tmp/sabnzbd.tar.gz -L \
 	"https://github.com/sabnzbd/sabnzbd/releases/download/${SABNZBD_RELEASE}/SABnzbd-${SABNZBD_RELEASE}-src.tar.gz" \
@@ -25,7 +27,7 @@ RUN \
 	/tmp/sabnzbd.tar.gz -C \
 	/opt/sabnzbd --strip-components=1
 
-FROM alpine:${ALPINE_VER} as build-stage
+FROM alpine:${ALPINE_VER} as python-build-stage
 
 ############## python build stage ##############
 
@@ -44,7 +46,51 @@ RUN \
 RUN \
 	set -ex \
 	&& python tools/make_mo.py
-	
+
+FROM alpine:${ALPINE_VER} as pip-stage
+
+############## pip packages install stage ##############
+
+# install build packages
+RUN \
+	set -ex \
+	&& apk add --no-cache \
+		bash \
+		binutils \
+		g++ \
+		libffi-dev \
+		make \
+		openssl-dev \
+		py2-pip \
+		python2-dev
+
+# install pip packages
+RUN \
+	set -ex \
+	&& pip install -U \
+		cheetah3 \
+		cryptography \
+		sabyenc 
+
+# set shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# strip packages
+RUN \
+	set -ex \
+	&& find usr/lib/python2.7/site-packages -type f | \
+		while read -r files ; \
+		do strip "${files}" || true \
+	; done
+
+# remove unneeded files
+RUN \	
+	set -ex \
+	&& for cleanfiles in *.la *.pyc *.pyo; \
+	do \
+	find usr/lib/python2.7/site-packages -iname "${cleanfiles}" -exec rm -vf '{}' + \
+	; done
+
 FROM sparklyballs/alpine-test:${ALPINE_VER}
 
 ############## runtine stage ##############
@@ -54,56 +100,26 @@ FROM sparklyballs/alpine-test:${ALPINE_VER}
 # builds will fail unless you download a copy of the build artifacts and place in a folder called build
 ADD /build/par2-*.tar.gz /usr/bin/
 
+# add artifacts from build and pip stages
+COPY --from=python-build-stage /opt/sabnzbd /opt/sabnzbd
+COPY --from=pip-stage /usr/lib/python2.7/site-packages /usr/lib/python2.7/site-packages
 
-# install build packages
-RUN \
-	apk add --no-cache --virtual=build-dependencies \
-		g++ \
-		libffi-dev \
-		make \
-		openssl-dev \
-		py2-pip \
-		python2-dev \
-	\
-# install pip packages
-	\
-	&& pip install -U \
-		cheetah3 \
-		cryptography \
-		sabyenc \
-	\
-# uninstall build packages
-	\
-	&& apk del \
-		build-dependencies \
-	\
 # install runtime packages
-	\
+RUN \
+	set -ex \
 	&& apk add --no-cache \
-	libffi \
-	openssl \
-	python2 \
-	p7zip \
-	unrar \
-	unzip \
+		libffi \
+		openssl \
+		python2 \
+		p7zip \
+		unrar \
+		unzip \
 	\
 # create symlinks for par2
 	\
 	&& ln -sf /usr/bin/par2 /usr/bin/par2create \
 	&& ln -sf /usr/bin/par2 /usr/bin/par2repair \
-	&& ln -sf /usr/bin/par2 /usr/bin/par2verify \
-	\
-# cleanup
-	\
-	&& rm -rf \
-	/root \
-	/tmp/* \
-	&& mkdir -p \
-		/root
-
-
-# add artifacts from fetch stage
-COPY --from=fetch-stage /opt/sabnzbd /opt/sabnzbd
+	&& ln -sf /usr/bin/par2 /usr/bin/par2verify
 
 # add local files
 COPY root/ /
