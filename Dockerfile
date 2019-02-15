@@ -95,10 +95,13 @@ FROM sparklyballs/alpine-test:${ALPINE_VER}
 
 ############## runtine stage ##############
 
-# add par2
-# sourced from self build here https://ci.sparklyballs.com:9443/job/Application-Builds/job/par2-build/
+# add par2 and unrar
+# sourced from self builds here:- 
+# https://ci.sparklyballs.com:9443/job/App-Builds/job/par2-build/
+# and here :-
+# https://ci.sparklyballs.com:9443/job/App-Builds/job/unrar-build/
 # builds will fail unless you download a copy of the build artifacts and place in a folder called build
-ADD /build/par2-*.tar.gz /usr/bin/
+ADD /build/par2-*.tar.gz /build/unrar-*.tar.gz /usr/bin/
 
 # add artifacts from build and pip stages
 COPY --from=python-build-stage /opt/sabnzbd /opt/sabnzbd
@@ -109,10 +112,10 @@ RUN \
 	set -ex \
 	&& apk add --no-cache \
 		libffi \
+		libstdc++ \
 		openssl \
 		python2 \
 		p7zip \
-		unrar \
 		unzip \
 	\
 # create symlinks for par2
