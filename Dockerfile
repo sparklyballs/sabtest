@@ -118,7 +118,6 @@ RUN \
 	set -ex \
 	&& apk add --no-cache \
 		libffi \
-		libstdc++ \
 		openssl \
 		python2 \
 		p7zip \
