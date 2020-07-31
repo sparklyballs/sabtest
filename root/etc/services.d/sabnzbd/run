@@ -1,5 +1,6 @@
 #!/usr/bin/with-contenv bash
 
+cd /config 
 
 exec \
 	s6-setuidgid abc /opt/sabnzbd/SABnzbd.py \
