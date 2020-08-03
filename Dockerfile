@@ -33,9 +33,9 @@ RUN \
 	/tmp/sabnzbd.tar.gz -C \
 	/opt/sabnzbd --strip-components=1
 
-FROM alpine:${ALPINE_VER} as python-build-stage
+FROM alpine:${ALPINE_VER} as build-stage
 
-############## python build stage ##############
+############## build stage ##############
 
 # copy artifacts from fetch stage
 COPY --from=fetch-stage /opt/sabnzbd /opt/sabnzbd
@@ -82,6 +82,14 @@ RUN \
 		do strip "${files}" || true \
 	; done
 
+# remove unneeded files
+RUN \	
+	set -ex \
+	&& for cleanfiles in *.la *.pyc *.pyo; \
+	do \
+	find /usr/lib/python3.8/site-packages -iname "${cleanfiles}" -exec rm -vf '{}' + \
+	; done
+
 FROM sparklyballs/alpine-test:${ALPINE_VER}
 
 ############## runtine stage ##############
@@ -95,8 +103,8 @@ FROM sparklyballs/alpine-test:${ALPINE_VER}
 ADD /build/par2-*.tar.gz /build/unrar-*.tar.gz /usr/bin/
 
 # add artifacts from build stage
-COPY --from=python-build-stage /opt/sabnzbd /opt/sabnzbd
-COPY --from=python-build-stage /usr/lib/python3.8/site-packages /usr/lib/python3.8/site-packages
+COPY --from=build-stage /opt/sabnzbd /opt/sabnzbd
+COPY --from=build-stage /usr/lib/python3.8/site-packages /usr/lib/python3.8/site-packages
 
 # install runtime packages
 RUN \
