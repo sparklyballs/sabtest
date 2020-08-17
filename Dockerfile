@@ -31,7 +31,10 @@ RUN \
 	"https://github.com/sabnzbd/sabnzbd/releases/download/${SABNZBD_RELEASE}/SABnzbd-${SABNZBD_RELEASE}-src.tar.gz" \
 	&& tar xf \
 	/tmp/sabnzbd.tar.gz -C \
-	/opt/sabnzbd --strip-components=1
+	/opt/sabnzbd --strip-components=1 \
+	&& curl -o \
+	/opt/sabnzbd -L \
+	"https://raw.githubusercontent.com/sabnzbd/sabnzbd/develop/requirements.txt"
 
 FROM alpine:${ALPINE_VER} as build-stage
 
