@@ -63,9 +63,7 @@ RUN \
 		wheel \
 	&& python3 \
 		-m pip install \
-		-r requirements.txt -U \
-	&& pip3 install -U \
-		'feedparser<6.0'
+		-r requirements.txt -U
 
 # enable multi-language support
 RUN \
