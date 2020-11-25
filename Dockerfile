@@ -59,7 +59,7 @@ RUN \
 # install pip packages
 RUN \
 	set -ex \
-	&& pip3 install -U \
+	&& pip3 install -U --no-cache-dir \
 		wheel \
 	&& python3 \
 		-m pip install \
