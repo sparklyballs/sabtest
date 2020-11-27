@@ -59,11 +59,11 @@ RUN \
 # install pip packages
 RUN \
 	set -ex \
-	&& pip3 install -U --no-cache-dir \
+	&& pip3 install --no-cache-dir -U \
 		wheel \
 	&& python3 \
 		-m pip install \
-		-r requirements.txt -U
+		-r requirements.txt --no-cache-dir -U
 
 # enable multi-language support
 RUN \
