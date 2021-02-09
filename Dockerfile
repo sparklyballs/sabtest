@@ -49,12 +49,14 @@ RUN \
 	&& apk add --no-cache \
 		bash \
 		binutils \
+		cargo \
 		g++ \
 		libffi-dev \
 		make \
 		openssl-dev \
 		py3-pip \
-		python3-dev
+		python3-dev \
+		rust
 
 # install pip packages
 RUN \
