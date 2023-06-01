@@ -3,32 +3,30 @@ FROM alpine:${ALPINE_VER} as fetch-stage
 
 ############## fetch stage ##############
 
+# build args
+ARG RELEASE
+
 # install fetch packages
 RUN \
 	apk add --no-cache \
 		bash \
-		curl
+		curl \
+		jq
 
 # set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# fetch version file
+# fetch source
 RUN \
-	set -ex \
-	&& curl -o \
-	/tmp/version.txt -L \
-	"https://raw.githubusercontent.com/sparklyballs/versioning/master/version.txt"
-
-# fetch source code
-# hadolint ignore=SC1091
-RUN \
-	. /tmp/version.txt \
+	if [ -z ${RELEASE+x} ]; then \
+	RELEASE=$(curl -u "${SECRETUSER}:${SECRETPASS}" -sX GET "https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest" \
+	| jq -r ".tag_name");	fi \
 	&& set -ex \
 	&& mkdir -p \
 		/opt/sabnzbd \
 	&& curl -o \
 	/tmp/sabnzbd.tar.gz -L \
-	"https://github.com/sabnzbd/sabnzbd/releases/download/${SABNZBD_RELEASE}/SABnzbd-${SABNZBD_RELEASE}-src.tar.gz" \
+	"https://github.com/sabnzbd/sabnzbd/releases/download/${RELEASE}/SABnzbd-${RELEASE}-src.tar.gz" \
 	&& tar xf \
 	/tmp/sabnzbd.tar.gz -C \
 	/opt/sabnzbd --strip-components=1
