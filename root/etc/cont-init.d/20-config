@@ -9,5 +9,3 @@ mkdir -p \
 chown abc:abc \
 	/downloads \
 	/incomplete-downloads
-
-chown abc:abc $ralph
