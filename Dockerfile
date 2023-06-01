@@ -14,7 +14,7 @@ RUN \
 		jq
 
 # set shell
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # fetch source
 RUN \
