@@ -59,7 +59,7 @@ RUN \
 # install pip packages
 RUN \
 	set -ex \
-	&& pip3 install --no-cache-dir -U \
+	&& pip3 install --no-cache-dir -U --break-system-packages \
 		wheel \
 	&& python3 \
 		-m pip install \
