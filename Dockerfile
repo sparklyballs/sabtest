@@ -63,7 +63,7 @@ RUN \
 		wheel \
 	&& python3 \
 		-m pip install \
-		-r requirements.txt --no-cache-dir -U
+		-r requirements.txt --no-cache-dir -U --break-system-packages
 
 # enable multi-language support
 RUN \
