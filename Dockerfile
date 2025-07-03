@@ -1,4 +1,4 @@
-ARG ALPINE_VER="3.19"
+ARG ALPINE_VER="3.22"
 FROM alpine:${ALPINE_VER} as fetch-stage
 
 ############## fetch stage ##############
@@ -77,7 +77,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # strip packages
 RUN \
 	set -ex \
-	&& find /usr/lib/python3.11/site-packages -type f | \
+	&& find /usr/lib/python3.12/site-packages -type f | \
 		while read -r files ; \
 		do strip "${files}" || true \
 	; done
@@ -87,7 +87,7 @@ RUN \
 	set -ex \
 	&& for cleanfiles in *.la *.pyc *.pyo; \
 	do \
-	find /usr/lib/python3.11/site-packages -iname "${cleanfiles}" -exec rm -vf '{}' + \
+	find /usr/lib/python3.12/site-packages -iname "${cleanfiles}" -exec rm -vf '{}' + \
 	; done
 
 FROM sparklyballs/alpine-test:${ALPINE_VER}
@@ -104,7 +104,7 @@ ADD /build/par2-*.tar.gz /build/unrar-*.tar.gz /usr/bin/
 
 # add artifacts from build stage
 COPY --from=build-stage /opt/sabnzbd /opt/sabnzbd
-COPY --from=build-stage /usr/lib/python3.11/site-packages /usr/lib/python3.11/site-packages
+COPY --from=build-stage /usr/lib/python3.12/site-packages /usr/lib/python3.12/site-packages
 
 # install runtime packages
 RUN \
